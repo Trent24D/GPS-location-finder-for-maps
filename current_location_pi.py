@@ -1,8 +1,8 @@
 import serial
 import pynmea2
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
-comPort = "/dev/ttyUSB0"
+comPort = "/dev/ttyACM0"  # Adjust as needed for your GPS device
 baudRate = 9600
 outputFile = "gps_parsed.txt"
 logInterval = timedelta(seconds=60)
@@ -28,7 +28,7 @@ with open(outputFile, "a") as f:
         except pynmea2.ParseError:
             continue
 
-        systemTime = datetime.utcnow().isoformat()
+        systemTime = datetime.now(timezone.utc).isoformat()
         latitude = longitude = speedKmh = heading = altitude = "NA"
         gpsTime = "NO_FIX"
         hasFix = False
