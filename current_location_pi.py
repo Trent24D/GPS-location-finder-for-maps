@@ -5,7 +5,7 @@ from datetime import datetime, timedelta, timezone
 comPort = "/dev/ttyACM0"  # Adjust as needed for your GPS device
 baudRate = 9600
 outputFile = "gps_parsed.txt"
-logInterval = timedelta(seconds=60)
+logInterval = timedelta(seconds=180)  # Log every 3 minutes
 
 lastLat = None
 lastLon = None
@@ -46,7 +46,7 @@ with open(outputFile, "a") as f:
             if msg.altitude:
                 altitude = msg.altitude
 
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         logThis = False
 
         # first output always
@@ -56,7 +56,7 @@ with open(outputFile, "a") as f:
             lastLogTime = now
 
         # log if new fix and coordinates changed
-        elif hasFix and (latitude != lastLat or longitude != lastLon):
+        elif hasFix and (latitude != lastLat or longitude != lastLon) and lastLogTime >= logInterval/2:
             logThis = True
             lastLogTime = now
 
