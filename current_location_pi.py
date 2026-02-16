@@ -1,6 +1,7 @@
 import serial
 import pynmea2
 from datetime import datetime, timedelta, timezone
+import threading
 
 comPort = "/dev/ttyACM0"  # Adjust as needed for your GPS device
 baudRate = 9600
@@ -14,12 +15,21 @@ firstOutputDone = False
 
 ser = serial.Serial(comPort, baudRate, timeout=1)
 
-with open(outputFile, "a") as f:
-    if f.tell() == 0:
-        f.write("systemTime,gpsTime,latitude,longitude,speedKmh,heading,altitudeM\n")
+stopEvent = threading.Event()
 
-    while True:
+def waitForExit():
+    input()
+    stopEvent.set()
+
+threading.Thread(target=waitForExit, daemon=True).start()
+
+with open(outputFile, "a") as f:
+
+    f.write("systemTime,gpsTime,latitude,longitude,speedKmh,heading,altitudeM\n")
+
+    while not stopEvent.is_set():
         line = ser.readline().decode("ascii", errors="replace").strip()
+
         if not line.startswith("$"):
             continue
 
@@ -45,6 +55,8 @@ with open(outputFile, "a") as f:
         elif msg.sentence_type == "GGA":
             if msg.altitude:
                 altitude = msg.altitude
+            if msg.gps_qual and int(msg.gps_qual) > 0:
+                hasFix = True
 
         now = datetime.now(timezone.utc)
         logThis = False
@@ -56,7 +68,7 @@ with open(outputFile, "a") as f:
             lastLogTime = now
 
         # log if new fix and coordinates changed
-        elif hasFix and (latitude != lastLat or longitude != lastLon) and lastLogTime >= logInterval/2:
+        elif hasFix and (latitude != lastLat or longitude != lastLon) and (lastLogTime is None or now - lastLogTime >= logInterval/2):
             logThis = True
             lastLogTime = now
 
