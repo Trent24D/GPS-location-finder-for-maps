@@ -1,6 +1,7 @@
 import serial
 import pynmea2
 from datetime import datetime, timedelta, timezone
+import threading
 
 comPort = "/dev/ttyACM0"  # Adjust as needed for your GPS device
 baudRate = 9600
@@ -14,11 +15,19 @@ firstOutputDone = False
 
 ser = serial.Serial(comPort, baudRate, timeout=1)
 
+stopEvent = threading.Event()
+
+def waitForExit():
+    input()
+    stopEvent.set()
+
+threading.Thread(target=waitForExit, daemon=True).start()
+
 with open(outputFile, "a") as f:
 
-    f.write("systemTime,gpsTime,latitude,longitude,speedKmh,heading,altitudeM\n") if f.tell() == 0 else None
+    f.write("systemTime,gpsTime,latitude,longitude,speedKmh,heading,altitudeM\n")
 
-    while True:
+    while not stopEvent.is_set():
         line = ser.readline().decode("ascii", errors="replace").strip()
 
         if not line.startswith("$"):
