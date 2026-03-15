@@ -22,3 +22,4 @@ System Date, Time (UTC), latitude, longitude, speedKmh, heading, altitude
 After the data is collected, run plot_data.py, and a html file with the plotted points on the map should appear. Make sure to change the home lat and lon to make it center where you would like. 
 
 Here is an image of what it looks like 
+![Port Hueneme Plotted Map Segment](https://github.com/Trent24D/GPS-location-finder-for-maps/blob/e81e7b0c52e9e19f2313863af572e9ca608678e5/Port%20Hueneme%20Data.png)
