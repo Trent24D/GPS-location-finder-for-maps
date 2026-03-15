@@ -8,7 +8,6 @@ def parse_log_file(file_path):
             line = line.strip()
             if not line or '|' not in line: continue  # skip empty lines
             parts = line.split('|')  # break line by the | (pipe)
-            print(parts)
             try:  # sorry mr. keithley, im using try except to not crash on bad outputs just in case
                 coords = parts[2].strip().split(',')
                 lat, lon = float(coords[0].strip()), float(coords[1].strip())  # This is all based on current_location_pi.py output format, so adjust if you changed that format
@@ -16,7 +15,7 @@ def parse_log_file(file_path):
                 # checks
                 if lat == 0 or lon == 0: continue  # skip invalid coords, but if you are traveling to the Gulf of Guinea or West Africa, remove this check
                 if lat < -90 or lat > 90 or lon < -180 or lon > 180: continue  # skip out of bounds coords (this shouldn't happen naturally, but if there was a bad edit to cords, remove that data)
-                if parts[0].strip() == " GPS: NO_FIX ": continue  # skip no fix lines
+                #if parts[0].strip() == " GPS: NO_FIX ": continue  # skip no fix lines (this is redundant as checking if lat and lon are 0 should catch this)) 
                 
                 data.append({
                     'Timestamp': parts[0].strip(),
@@ -29,6 +28,7 @@ def parse_log_file(file_path):
                     # ignoring speed, altitude, and heading as I am creating a 2D map, but if you create a 3D diagram throw them here as well
                 })
             except: continue
+
     # create a dateframe object from the data list
     dataframe = pd.DataFrame(data)
     if not dataframe.empty:
