@@ -19,5 +19,6 @@ gps data is given in the following format:
 
 System Date, Time (UTC), latitude, longitude, speedKmh, heading, altitude
 
+After the data is collected, run plot_data.py, and a html file with the plotted points on the map should appear. Make sure to change the home lat and lon to make it center where you would like. 
 
-good luck!
+Here is an image of what it looks like 
