@@ -5,7 +5,7 @@ from datetime import datetime, timedelta, timezone
 comPort = "/dev/ttyACM0"  # Adjust as needed for your GPS device
 baudRate = 9600
 outputFile = "gps_parsed.txt"
-logInterval = timedelta(seconds=180)  # Log every 3 minutes
+logInterval = timedelta(seconds=90)  # Log every 1.5 minutes
 
 lastLat = None
 lastLon = None
